@@ -1,2 +1,2 @@
-# learning-html-from-scratch
-learning html from scratch
+# learning-Basics-from-scratch
+learning html, css from scratch
