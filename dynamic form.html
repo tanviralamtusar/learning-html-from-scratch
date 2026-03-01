@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Charge Request</title>
+    <style>
+        /* --- CSS Styling --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            padding: 20px;
+            margin: 0;
+        }
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        h2 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4b5563;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+        
+        /* Radio Button Cards */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .radio-card {
+            flex: 1;
+            min-width: 180px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        .radio-card input {
+            display: none;
+        }
+        .radio-card.active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        /* Conditional Sections */
+        .hidden {
+            display: none !important;
+        }
+        .sea-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button[type="submit"]:hover {
+            background: #1d4ed8;
+        }
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* Success Message */
+        #successMessage {
+            display: none;
+            text-align: center;
+            background: #dcfce7;
+            color: #166534;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #bbf7d0;
+        }
+        .file-hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .form-row { flex-direction: column; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <!-- Success Message (Hidden by default) -->
+        <div id="successMessage">
+            ধন্যবাদ! আপনার তথ্য পেয়েছি। খুব দ্রুত আমরা আপনাকে শিপমেন্ট চার্জ জানিয়ে দেব।
+        </div>
+
+        <!-- The Form -->
+        <form id="shipmentForm" enctype="multipart/form-data">
+            
+            <!-- FormSubmit Configuration (Hidden) -->
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_subject" value="New Shipment Charge Request!">
+
+            <h2>Shipment Charge Request</h2>
+
+            <!-- Shipment Type Selection -->
+            <label>Shipment Type</label>
+            <div class="radio-group">
+                <label class="radio-card active">
+                    <input type="radio" name="Shipment_Type" value="By Air Shipment" checked onchange="toggleFields()"> 
+                    By Air Shipment
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="Shipment_Type" value="Hand Carry (36–48 Hours)" onchange="toggleFields()"> 
+                    Hand Carry (36–48 Hrs)
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="Shipment_Type" value="By Sea Shipment (30–45 Days)" onchange="toggleFields()"> 
+                    By Sea Shipment (30–45 Days)
+                </label>
+            </div>
+
+            <!-- Common Fields (Always visible) -->
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="Name" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="Phone_Number" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="Email" required>
+                </div>
+            </div>
+
+            <!-- Form 1: Air & Hand Carry Fields -->
+            <div id="airFields" class="form-group">
+                <label>কি পণ্য আনাতে চাচ্ছেন? (Item name)</label>
+                <input type="text" name="Item_Name" id="airItemName" required>
+            </div>
+
+            <!-- Form 2: Sea Shipment Fields -->
+            <div id="seaFields" class="sea-section hidden">
+                <div class="form-group">
+                    <label>Products Name</label>
+                    <input type="text" name="Products_Name" id="seaProductName">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Total CBM</label>
+                        <input type="text" name="Total_CBM" id="seaCBM">
+                    </div>
+                    <div class="form-group">
+                        <label>Total Carton</label>
+                        <input type="number" name="Total_Carton" id="seaCarton">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Total Quantity</label>
+                        <input type="number" name="Total_Quantity" id="seaQuantity">
+                    </div>
+                    <div class="form-group">
+                        <label>Products HS Code</label>
+                        <input type="text" name="Products_HS_Code" id="seaHSCode">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Purpose of Use</label>
+                    <input type="text" name="Purpose_of_Use" id="seaPurpose">
+                </div>
+            </div>
+
+            <!-- Common Bottom Fields (Always visible) -->
+            <div class="form-group">
+                <label>Total Weight (kg)</label>
+                <input type="text" name="Total_Weight" required>
+            </div>
+            <div class="form-group">
+                <label>Product Picture</label>
+                <input type="file" name="Product_Picture" accept=".jpg, .jpeg, .png, .pdf" required>
+                <div class="file-hint">Accepted formats: JPG, PNG, PDF (Max 10MB)</div>
+            </div>
+
+            <button type="submit" id="submitBtn">Submit Request</button>
+        </form>
+    </div>
+
+    <!-- --- JavaScript Logic --- -->
+    <script>
+        // 1. Conditional Logic to show/hide fields
+        function toggleFields() {
+            const type = document.querySelector('input[name="Shipment_Type"]:checked').value;
+            const airFields = document.getElementById('airFields');
+            const seaFields = document.getElementById('seaFields');
+            
+            // Update Card Styles
+            document.querySelectorAll('.radio-card').forEach(card => card.classList.remove('active'));
+            document.querySelector(`input[value="${type}"]`).parentElement.classList.add('active');
+
+            // Toggle Fields & Required Attributes
+            if (type === 'By Sea Shipment (30–45 Days)') {
+                // Hide Air, Show Sea
+                airFields.classList.add('hidden');
+                document.getElementById('airItemName').removeAttribute('required');
+                
+                seaFields.classList.remove('hidden');
+                document.getElementById('seaProductName').setAttribute('required', 'true');
+                document.getElementById('seaCBM').setAttribute('required', 'true');
+                document.getElementById('seaCarton').setAttribute('required', 'true');
+                document.getElementById('seaQuantity').setAttribute('required', 'true');
+                document.getElementById('seaHSCode').setAttribute('required', 'true');
+                document.getElementById('seaPurpose').setAttribute('required', 'true');
+            } else {
+                // Hide Sea, Show Air
+                seaFields.classList.add('hidden');
+                document.getElementById('seaProductName').removeAttribute('required');
+                document.getElementById('seaCBM').removeAttribute('required');
+                document.getElementById('seaCarton').removeAttribute('required');
+                document.getElementById('seaQuantity').removeAttribute('required');
+                document.getElementById('seaHSCode').removeAttribute('required');
+                document.getElementById('seaPurpose').removeAttribute('required');
+
+                airFields.classList.remove('hidden');
+                document.getElementById('airItemName').setAttribute('required', 'true');
+            }
+        }
+
+        // 2. Handle Form Submission (AJAX)
+        const form = document.getElementById('shipmentForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent page reload
+            
+            // Disable button to prevent double clicks
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Submitting...";
+
+            const formData = new FormData(form);
+
+            // ⚠️ IMPORTANT: REPLACE 'your@email.com' WITH YOUR ACTUAL EMAIL ADDRESS BELOW ⚠️
+            const formSubmitUrl = "https://formsubmit.co/ajax/your@email.com";
+
+            try {
+                const response = await fetch(formSubmitUrl, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Hide form and show success message
+                    form.style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                } else {
+                    alert("Something went wrong. Please try again.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Submit Request";
+                }
+            } catch (error) {
+                alert("Network error. Please check your connection and try again.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Request";
+            }
+        });
+    </script>
+
+</body>
+</html>
